@@ -101,7 +101,7 @@ for i in te_norm:
 ##accuracy of kNN using nX 
 k_acu=[]            
 for i in range(1,16):
-    knn_pred, _=dr.kNN(tr_norm,tr[:,-1],te_norm,k=i,prior=priors)
+    knn_pred, _=dr.kNN(tr_norm,tr[:,-1],te_norm,k=i)
     k_acu.append(accuracy_score(te[:,-1], knn_pred))
 plt.plot(range(1,16),k_acu)
 plt.xlabel("k")
@@ -115,7 +115,7 @@ cm_case2 = confusion_matrix(te[:,-1], case2_pred)
 ##confusion matrix of case3 using nX 
 cm_case3 = confusion_matrix(te[:,-1], case3_pred)
 ##confusion matrix of knn using nX (k=1) 
-knn_pred, _=dr.kNN(tr_norm,tr[:,-1],te_norm,k=1,prior=priors)
+knn_pred, _=dr.kNN(tr_norm,tr[:,-1],te_norm,k=1)
 cm_knn = confusion_matrix(te[:,-1], knn_pred)
 
 ##varing prior probability and plot ROC curve
@@ -124,7 +124,6 @@ prior0=np.linspace(0.15, 0.85)
 prior0=prior0.tolist()
 sen_spec=np.empty(shape=(0,8))
 rocs=np.empty(shape=(0,8))
-s=freq[1]
 for i in prior0:
     prior_p = [1-i,i]
     case1_pred=[]
@@ -138,16 +137,16 @@ for i in prior0:
         case2_pred.append(prediction)
         prediction,_=dr.bayes_des_rule(para=para_case3,test=j,prior=prior_p)
         case3_pred.append(prediction)
-    knn_pred, _=dr.kNN(tr_norm,tr[:,-1],te_norm,k=1,prior=prior_p)
+    knn_pred, _=dr.kNN2(tr_norm,tr[:,-1],te_norm,k=1,ratio=prior_p)
     cm_knn = confusion_matrix(te[:,-1], knn_pred)
     cm_case1 = confusion_matrix(te[:,-1], case1_pred)
     cm_case2 = confusion_matrix(te[:,-1], case2_pred)
     cm_case3 = confusion_matrix(te[:,-1], case3_pred)
     
-    rocs=np.vstack((rocs,np.array((cm_case1[1][0]/s,cm_case1[1][1]/s,\
-                                   cm_case2[1][0]/s,cm_case2[1][1]/s,\
-                                   cm_case3[1][0]/s,cm_case3[1][1]/s,\
-                                   cm_knn[1][0]/s,cm_knn[1][1]/s))))
+    rocs=np.vstack((rocs,np.array((cm_case1[0][1]/freq[0],cm_case1[1][1]/freq[1],\
+                                   cm_case2[0][1]/freq[0],cm_case2[1][1]/freq[1],\
+                                   cm_case3[0][1]/freq[0],cm_case3[1][1]/freq[1],\
+                                   cm_knn[0][1]/freq[0],cm_knn[1][1]/freq[1]))))
     sen_spec=np.vstack((sen_spec,np.array((cm_case1[1][1]/(cm_case1[1][1]+cm_case1[1][0]),\
                                       cm_case1[0][0]/(cm_case1[0][0]+cm_case1[0][1]),\
                                       cm_case2[1][1]/(cm_case2[1][1]+cm_case2[1][0]),\
@@ -204,7 +203,7 @@ for i in te_pX:
 ##accuracy of kNN using nX 
 k_acu=[]            
 for i in range(1,16):
-    knn_pred, _=dr.kNN(tr_pX,tr[:,-1],te_pX,k=i,prior=priors)
+    knn_pred, _=dr.kNN(tr_pX,tr[:,-1],te_pX,k=i)
     k_acu.append(accuracy_score(te[:,-1], knn_pred))
 plt.plot(range(1,16),k_acu)
 plt.xlabel("k")
@@ -218,7 +217,7 @@ cm_case2 = confusion_matrix(te[:,-1], case2_pred)
 ##confusion matrix of case3 using nX 
 cm_case3 = confusion_matrix(te[:,-1], case3_pred)
 ##confusion matrix of knn using nX (k=1) 
-knn_pred, _=dr.kNN(tr_pX,tr[:,-1],te_pX,k=1,prior=priors)
+knn_pred, _=dr.kNN(tr_pX,tr[:,-1],te_pX,k=1)
 cm_knn = confusion_matrix(te[:,-1], knn_pred)
 
 ##varing prior probability and plot ROC curve
@@ -227,7 +226,6 @@ prior0=np.linspace(0.15, 0.85)
 prior0=prior0.tolist()
 sen_spec=np.empty(shape=(0,8))
 rocs=np.empty(shape=(0,8))
-s=freq[1]
 for i in prior0:
     prior_p = [1-i,i]
     case1_pred=[]
@@ -241,16 +239,16 @@ for i in prior0:
         case2_pred.append(prediction)
         prediction,_=dr.bayes_des_rule(para=para_case3,test=j,prior=prior_p)
         case3_pred.append(prediction)
-    knn_pred, _=dr.kNN(tr_pX,tr[:,-1],te_pX,k=1,prior=prior_p)
+    knn_pred, _=dr.kNN2(tr_pX,tr[:,-1],te_pX,k=1,ratio=prior_p)
     cm_knn = confusion_matrix(te[:,-1], knn_pred)
     cm_case1 = confusion_matrix(te[:,-1], case1_pred)
     cm_case2 = confusion_matrix(te[:,-1], case2_pred)
     cm_case3 = confusion_matrix(te[:,-1], case3_pred)
     
-    rocs=np.vstack((rocs,np.array((cm_case1[1][0]/s,cm_case1[1][1]/s,\
-                                   cm_case2[1][0]/s,cm_case2[1][1]/s,\
-                                   cm_case3[1][0]/s,cm_case3[1][1]/s,\
-                                   cm_knn[1][0]/s,cm_knn[1][1]/s))))
+    rocs=np.vstack((rocs,np.array((cm_case1[0][1]/freq[0],cm_case1[1][1]/freq[1],\
+                                   cm_case2[0][1]/freq[0],cm_case2[1][1]/freq[1],\
+                                   cm_case3[0][1]/freq[0],cm_case3[1][1]/freq[1],\
+                                   cm_knn[0][1]/freq[0],cm_knn[1][1]/freq[1]))))
     sen_spec=np.vstack((sen_spec,np.array((cm_case1[1][1]/(cm_case1[1][1]+cm_case1[1][0]),\
                                       cm_case1[0][0]/(cm_case1[0][0]+cm_case1[0][1]),\
                                       cm_case2[1][1]/(cm_case2[1][1]+cm_case2[1][0]),\
@@ -304,7 +302,7 @@ for i in te_fX:
 ##accuracy of kNN using nX 
 k_acu=[]            
 for i in range(1,16):
-    knn_pred, _=dr.kNN(tr_fX,tr[:,-1],te_fX,k=i,prior=priors)
+    knn_pred, _=dr.kNN(tr_fX,tr[:,-1],te_fX,k=i)
     k_acu.append(accuracy_score(te[:,-1], knn_pred))
 plt.plot(range(1,16),k_acu)
 plt.xlabel("k")
@@ -318,7 +316,7 @@ cm_case2 = confusion_matrix(te[:,-1], case2_pred)
 ##confusion matrix of case3 using nX 
 cm_case3 = confusion_matrix(te[:,-1], case3_pred)
 ##confusion matrix of knn using nX (k=1) 
-knn_pred, _=dr.kNN(tr_fX,tr[:,-1],te_fX,k=1,prior=priors)
+knn_pred, _=dr.kNN(tr_fX,tr[:,-1],te_fX,k=1)
 cm_knn = confusion_matrix(te[:,-1], knn_pred)
 
 ##varing prior probability and plot ROC curve
@@ -327,7 +325,6 @@ prior0=np.linspace(0.15, 0.85)
 prior0=prior0.tolist()
 sen_spec=np.empty(shape=(0,8))
 rocs=np.empty(shape=(0,8))
-s=freq[1]
 for i in prior0:
     prior_p = [1-i,i]
     case1_pred=[]
@@ -341,16 +338,16 @@ for i in prior0:
         case2_pred.append(prediction)
         prediction,_=dr.bayes_des_rule(para=para_case3,test=j,prior=prior_p)
         case3_pred.append(prediction)
-    knn_pred, _=dr.kNN(tr_fX,tr[:,-1],te_fX,k=1,prior=prior_p)
+    knn_pred, _=dr.kNN2(tr_fX,tr[:,-1],te_fX,k=1,ratio=prior_p)
     cm_knn = confusion_matrix(te[:,-1], knn_pred)
     cm_case1 = confusion_matrix(te[:,-1], case1_pred)
     cm_case2 = confusion_matrix(te[:,-1], case2_pred)
     cm_case3 = confusion_matrix(te[:,-1], case3_pred)
     
-    rocs=np.vstack((rocs,np.array((cm_case1[1][0]/s,cm_case1[1][1]/s,\
-                                   cm_case2[1][0]/s,cm_case2[1][1]/s,\
-                                   cm_case3[1][0]/s,cm_case3[1][1]/s,\
-                                   cm_knn[1][0]/s,cm_knn[1][1]/s))))
+    rocs=np.vstack((rocs,np.array((cm_case1[0][1]/freq[0],cm_case1[1][1]/freq[1],\
+                                   cm_case2[0][1]/freq[0],cm_case2[1][1]/freq[1],\
+                                   cm_case3[0][1]/freq[0],cm_case3[1][1]/freq[1],\
+                                   cm_knn[0][1]/freq[0],cm_knn[1][1]/freq[1]))))
     sen_spec=np.vstack((sen_spec,np.array((cm_case1[1][1]/(cm_case1[1][1]+cm_case1[1][0]),\
                                       cm_case1[0][0]/(cm_case1[0][0]+cm_case1[0][1]),\
                                       cm_case2[1][1]/(cm_case2[1][1]+cm_case2[1][0]),\

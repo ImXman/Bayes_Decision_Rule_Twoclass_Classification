@@ -10,6 +10,7 @@ Created on Tue Feb 19 15:38:23 2019
 import numpy as np
 import math
 import timeit
+import operator
 
 ##-----------------------------------------------------------------------------
 ##main functions
@@ -139,7 +140,7 @@ def FLD(x,y):
     return fX.T,v,orders
 
 ##kNN for classification
-def kNN(train_x,train_y,test_x,k=5,dist=2,prior=[0.5,0.5]):
+def kNN(train_x,train_y,test_x,k=5,dist=2):
     
     ##dist is integer and indicates which distance metric is used. when dist=1
     ##it's manhattan distance and when dist=2, it's euclidean distance
@@ -157,10 +158,40 @@ def kNN(train_x,train_y,test_x,k=5,dist=2,prior=[0.5,0.5]):
         unic = unic.tolist()
         cout = cout.tolist()
         for g in range(len(unic)):
-            prob[i][unic[g]]=prior[int(unic[g])]*cout[g]/k
-        labels.append(max(prob[i]))
+            prob[i][unic[g]]=cout[g]/k
+        labels.append(max(prob[i].items(), key=operator.itemgetter(1))[0])
 
     stop = timeit.default_timer()
     print('Time: ', '%05d' % (stop - start),"s")  
     return labels, prob
         
+##kNN for classification integrating prior probability and only works for
+##two classes
+def kNN2(train_x,train_y,test_x,k=5,dist=2,ratio=[0.5,0.5]):
+    
+    ##dist is integer and indicates which distance metric is used. when dist=1
+    ##it's manhattan distance and when dist=2, it's euclidean distance
+    #start = timeit.default_timer()
+    labels=[]
+    prob={}
+    for i in range(test_x.shape[0]):
+        prob[i]={}
+        d=[]
+        for j in train_x:
+            d.append(np.power((np.power(abs(test_x[i,:]-j),dist)).sum(),1/dist))
+        orders =np.argsort(d).tolist()
+        y=train_y[orders]
+        unic,cout= np.unique(y[:k], return_counts=True)
+        unic = unic.tolist()
+        cout = cout.tolist()
+        if unic[0]==0:
+            prob[i][0]=ratio[0]*cout[0]/k
+            prob[i][1]=1-prob[i][0]
+        else:
+            prob[i][1]=ratio[1]*cout[0]/k
+            prob[i][0]=1-prob[i][1]
+        labels.append(max(prob[i].items(), key=operator.itemgetter(1))[0])
+
+    #stop = timeit.default_timer()
+    #print('Time: ', '%05d' % (stop - start),"s")  
+    return labels, prob
